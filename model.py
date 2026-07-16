@@ -100,8 +100,13 @@ def init_patch_encoder(key, patch_dim, latent_dim):
 
     return scale * jax.random.normal(key, shape=(patch_dim, latent_dim))
 
-# Step 7 - encode_patches (not yet solved)
-# TODO: implement
+# Step 7 - encode_patches
+def encode_patches(flat_patches, encoder_weight):
+    # TODO: Project each flattened patch to a latent vector with the linear encoder.
+    flat_patches = jnp.asarray(flat_patches)
+    encoder_weight = jnp.asarray(encoder_weight)
+
+    return flat_patches @ encoder_weight
 
 # Step 8 - init_patch_decoder (not yet solved)
 # TODO: implement
