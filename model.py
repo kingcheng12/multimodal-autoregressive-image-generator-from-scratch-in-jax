@@ -154,8 +154,14 @@ def init_codebook(key, num_codes, latent_dim):
 
     return tbl * std
 
-# Step 12 - squared_distance_to_codebook (not yet solved)
-# TODO: implement
+# Step 12 - squared_distance_to_codebook
+def squared_distance_to_codebook(latent, codebook):
+    # TODO: squared Euclidean distance from one latent vector to every codebook vector
+    diff = codebook - latent
+
+    sqrt_dist = jnp.sum(diff**2, axis=-1)
+
+    return sqrt_dist
 
 # Step 13 - grid_distances_to_codebook (not yet solved)
 # TODO: implement
