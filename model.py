@@ -85,8 +85,13 @@ def split_image_into_patches(image, patch_size):
     
     return patches.transpose(0, 2, 1, 3)
 
-# Step 5 - flatten_patches (not yet solved)
-# TODO: implement
+# Step 5 - flatten_patches
+def flatten_patches(patches):
+    # TODO: flatten each (p, p) patch in a (gh, gw, p, p) grid into a 1D pixel vector
+    patches = jnp.asarray(patches)
+    gh, gw, ph, pw = patches.shape
+
+    return patches.reshape((gh*gw, ph*pw))
 
 # Step 6 - init_patch_encoder (not yet solved)
 # TODO: implement
