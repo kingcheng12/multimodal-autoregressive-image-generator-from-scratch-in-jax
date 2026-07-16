@@ -145,8 +145,14 @@ def reassemble_patches_into_image(flat_patches, grid_h, grid_w, patch_size):
 
     return image
 
-# Step 11 - init_codebook (not yet solved)
-# TODO: implement
+# Step 11 - init_codebook
+def init_codebook(key, num_codes, latent_dim):
+    # TODO: draw a (num_codes, latent_dim) table of small random values from key
+    
+    tbl = jax.random.normal(key, shape = (num_codes, latent_dim))
+    std = 0.1
+
+    return tbl * std
 
 # Step 12 - squared_distance_to_codebook (not yet solved)
 # TODO: implement
