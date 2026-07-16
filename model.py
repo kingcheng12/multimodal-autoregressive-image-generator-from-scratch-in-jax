@@ -93,8 +93,12 @@ def flatten_patches(patches):
 
     return patches.reshape((gh*gw, ph*pw))
 
-# Step 6 - init_patch_encoder (not yet solved)
-# TODO: implement
+# Step 6 - init_patch_encoder
+def init_patch_encoder(key, patch_dim, latent_dim):
+    # TODO: return a (patch_dim, latent_dim) scaled Gaussian weight matrix from key
+    scale = 1.0 / jnp.sqrt(patch_dim)
+
+    return scale * jax.random.normal(key, shape=(patch_dim, latent_dim))
 
 # Step 7 - encode_patches (not yet solved)
 # TODO: implement
