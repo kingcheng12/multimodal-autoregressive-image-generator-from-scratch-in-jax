@@ -41,8 +41,24 @@ def generate_toy_images(key, num_images, image_size):
 
     return images.astype(jnp.float32)
 
-# Step 2 - assign_image_labels (not yet solved)
-# TODO: implement
+# Step 2 - assign_image_labels
+def assign_image_labels(images):
+    # TODO: label each image 'left' or 'right' by comparing left vs right pixel mass
+
+    images = jnp.asarray(images)
+
+    width = images.shape[-1]
+    midpoint = width // 2
+
+    left_mass = images[:, :, :midpoint].sum(axis=(1, 2))
+    right_mass = images[:, :, -midpoint:].sum(axis=(1, 2))
+
+    # JAX arrays do not support string elements, so return a Python list.
+    return np.where(
+        np.asarray(left_mass >= right_mass),
+        "left",
+        "right",
+    ).tolist()
 
 # Step 3 - normalize_image_batch (not yet solved)
 # TODO: implement
