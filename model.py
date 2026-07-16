@@ -60,8 +60,12 @@ def assign_image_labels(images):
         "right",
     ).tolist()
 
-# Step 3 - normalize_image_batch (not yet solved)
-# TODO: implement
+# Step 3 - normalize_image_batch
+def normalize_image_batch(images):
+    # TODO: rescale images from [0, 1] into the symmetric [-1, 1] range
+    images = jnp.asarray(images)
+
+    return 2.0 * images - 1.0
 
 # Step 4 - split_image_into_patches (not yet solved)
 # TODO: implement
