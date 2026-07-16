@@ -67,8 +67,23 @@ def normalize_image_batch(images):
 
     return 2.0 * images - 1.0
 
-# Step 4 - split_image_into_patches (not yet solved)
-# TODO: implement
+# Step 4 - split_image_into_patches
+def split_image_into_patches(image, patch_size):
+    # TODO: Split a single (H, W) image into a grid of non-overlapping square patches.
+    image = jnp.asarray(image)
+
+    height, width = image.shape
+    num_patch_rows = height // patch_size
+    num_patch_cols = width // patch_size
+
+    patches = image.reshape(
+        num_patch_rows,
+        patch_size,
+        num_patch_cols,
+        patch_size,
+    )
+    
+    return patches.transpose(0, 2, 1, 3)
 
 # Step 5 - flatten_patches (not yet solved)
 # TODO: implement
