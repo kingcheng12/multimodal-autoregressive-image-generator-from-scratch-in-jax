@@ -108,8 +108,13 @@ def encode_patches(flat_patches, encoder_weight):
 
     return flat_patches @ encoder_weight
 
-# Step 8 - init_patch_decoder (not yet solved)
-# TODO: implement
+# Step 8 - init_patch_decoder
+def init_patch_decoder(key, latent_dim, patch_dim):
+    # TODO: sample a (latent_dim, patch_dim) weight from key, scaled by 1/sqrt(latent_dim)
+
+    weight = jax.random.normal(key, shape=(latent_dim, patch_dim))
+
+    return weight / jnp.sqrt(latent_dim)
 
 # Step 9 - decode_latents (not yet solved)
 # TODO: implement
