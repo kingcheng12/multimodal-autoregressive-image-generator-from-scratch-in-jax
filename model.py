@@ -322,8 +322,22 @@ def apply_vqvae_update(params, grads, opt_state, optimizer):
 
     return new_params, new_opt_state
 
-# Step 23 - encode_image_to_tokens (not yet solved)
-# TODO: implement
+# Step 23 - encode_image_to_tokens
+def encode_image_to_tokens(image, params, patch_size):
+    # TODO: split, encode, quantize, and reshape patch codes into a token grid
+    encoder = params["encoder"]
+    codebook = params["codebook"]
+
+    patches = split_image_into_patches(image, patch_size)
+    grid_h, grid_w = patches.shape[:2]
+
+    flat_patches = flatten_patches(patches)
+    latents = encode_patches(flat_patches, encoder)
+    distances = grid_distances_to_codebook(latents, codebook)
+    token_indices = assign_nearest_codes(distances)
+    token_grid = token_indices.reshape(grid_h, grid_w)
+
+    return token_grid
 
 # Step 24 - flatten_token_grid (not yet solved)
 # TODO: implement
