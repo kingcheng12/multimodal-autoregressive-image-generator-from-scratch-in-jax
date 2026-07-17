@@ -374,8 +374,12 @@ def form_multimodal_sequence(text_ids, image_tokens, image_token_offset):
     
     return jnp.concatenate([text_ids, image_tokens+image_token_offset])
 
-# Step 29 - init_token_embedding (not yet solved)
-# TODO: implement
+# Step 29 - init_token_embedding
+def init_token_embedding(key, vocab_size, embed_dim):
+    # TODO: build a small randomly initialized (vocab_size, embed_dim) embedding table
+    scale = 0.02
+
+    return scale * jax.random.normal(key, shape=(vocab_size, embed_dim))
 
 # Step 30 - init_positional_embedding (not yet solved)
 # TODO: implement
