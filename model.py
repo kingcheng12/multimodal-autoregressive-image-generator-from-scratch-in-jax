@@ -207,8 +207,14 @@ def codebook_loss(latents, quantized):
 
     return mse
 
-# Step 18 - commitment_loss (not yet solved)
-# TODO: implement
+# Step 18 - commitment_loss
+def commitment_loss(latents, quantized):
+    # TODO: mean squared error between latents and stop_gradient(quantized)
+    
+    target_quantized = jax.lax.stop_gradient(quantized)
+    mse = jnp.mean((latents - target_quantized) ** 2)
+
+    return mse
 
 # Step 19 - reconstruction_loss (not yet solved)
 # TODO: implement
