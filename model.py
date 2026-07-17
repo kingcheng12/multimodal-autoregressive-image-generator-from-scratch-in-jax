@@ -163,11 +163,26 @@ def squared_distance_to_codebook(latent, codebook):
 
     return sqrt_dist
 
-# Step 13 - grid_distances_to_codebook (not yet solved)
-# TODO: implement
+# Step 13 - grid_distances_to_codebook
+def grid_distances_to_codebook(latents, codebook):
+    # TODO: squared distance from each latent (P, D) to each code (K, D) -> (P, K)
+    
+    latents = jnp.asarray(latents)
+    codebook = jnp.asarray(codebook)
 
-# Step 14 - assign_nearest_codes (not yet solved)
-# TODO: implement
+    differences = latents[:, None, :] - codebook[None, :, :]
+    return jnp.sum(differences ** 2, axis=-1)
+
+# Step 14 - assign_nearest_codes
+import jax
+import jax.numpy as jnp
+
+def assign_nearest_codes(distances):
+    # TODO: return the nearest codebook index for each latent via argmin over codes
+    
+    # distance: num_patches, num_codes
+
+    return jnp.argmin(distances, axis = -1)
 
 # Step 15 - lookup_codebook_vectors (not yet solved)
 # TODO: implement
