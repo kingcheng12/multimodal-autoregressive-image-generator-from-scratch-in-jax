@@ -216,8 +216,11 @@ def commitment_loss(latents, quantized):
 
     return mse
 
-# Step 19 - reconstruction_loss (not yet solved)
-# TODO: implement
+# Step 19 - reconstruction_loss
+def reconstruction_loss(image, reconstruction):
+    # TODO: return the mean squared error between image and reconstruction
+    
+    return jnp.mean((image - reconstruction)**2)
 
 # Step 20 - total_vqvae_loss (not yet solved)
 # TODO: implement
