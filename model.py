@@ -400,8 +400,14 @@ def add_positional_embeddings(token_embeds, positional_embedding):
     seq_len = len(token_embeds)
     return token_embeds + positional_embedding[:seq_len]
 
-# Step 33 - build_causal_mask (not yet solved)
-# TODO: implement
+# Step 33 - build_causal_mask
+def build_causal_mask(seq_len):
+    # TODO: return (seq_len, seq_len) additive mask: 0.0 where j<=i else -1e9
+    
+    future_pos = jnp.ones((seq_len, seq_len))
+    future_pos = jnp.triu(future_pos, k = 1)
+
+    return jnp.where(future_pos, -1e9, 0)
 
 # Step 34 - layer_norm (not yet solved)
 # TODO: implement
