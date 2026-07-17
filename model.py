@@ -409,8 +409,20 @@ def build_causal_mask(seq_len):
 
     return jnp.where(future_pos, -1e9, 0)
 
-# Step 34 - layer_norm (not yet solved)
-# TODO: implement
+# Step 34 - layer_norm
+def layer_norm(x, scale, shift, eps=1e-5):
+    # TODO: standardize x over its last axis, then apply learned scale and shift
+
+    x = jnp.asarray(x)
+    scale = jnp.asarray(scale)
+    shift = jnp.asarray(shift)
+
+    mean = jnp.mean(x, axis=-1, keepdims=True)
+    variance = jnp.mean((x - mean) ** 2, axis=-1, keepdims=True)
+    
+    normalized = (x - mean) / jnp.sqrt(variance + eps)
+
+    return normalized * scale + shift
 
 # Step 35 - init_attention_params (not yet solved)
 # TODO: implement
