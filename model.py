@@ -307,8 +307,20 @@ def vqvae_loss_and_grads(params, image_batch, patch_size, commitment_weight):
 
     return jax.value_and_grad(loss_fn)(params)
 
-# Step 22 - apply_vqvae_update (not yet solved)
-# TODO: implement
+# Step 22 - apply_vqvae_update
+def apply_vqvae_update(params, grads, opt_state, optimizer):
+    # TODO: Apply one optax update to the VQ-VAE params and return new params + opt state.
+    
+    updates, new_opt_state = optimizer.update(
+        grads,
+        opt_state,
+        params,
+    )
+
+    # Apply the updates to the parameter pytree.
+    new_params = optax.apply_updates(params, updates)
+
+    return new_params, new_opt_state
 
 # Step 23 - encode_image_to_tokens (not yet solved)
 # TODO: implement
