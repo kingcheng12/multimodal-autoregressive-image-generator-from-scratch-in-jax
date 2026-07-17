@@ -184,8 +184,10 @@ def assign_nearest_codes(distances):
 
     return jnp.argmin(distances, axis = -1)
 
-# Step 15 - lookup_codebook_vectors (not yet solved)
-# TODO: implement
+# Step 15 - lookup_codebook_vectors
+def lookup_codebook_vectors(indices, codebook):
+    # TODO: return the codebook row for each token index, shape (num_patches, latent_dim)
+    return codebook[indices]
 
 # Step 16 - straight_through_quantize (not yet solved)
 # TODO: implement
