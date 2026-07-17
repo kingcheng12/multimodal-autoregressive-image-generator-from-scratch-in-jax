@@ -202,8 +202,8 @@ def straight_through_quantize(latents, quantized):
 # Step 17 - codebook_loss
 def codebook_loss(latents, quantized):
     # TODO: mean squared error between stop_gradient(latents) and quantized
-    
-    mse = jnp.mean((latents - quantized) ** 2)
+    target_latents = jax.lax.stop_gradient(latents)
+    mse = jnp.mean((target_latents - quantized) ** 2)
 
     return mse
 
