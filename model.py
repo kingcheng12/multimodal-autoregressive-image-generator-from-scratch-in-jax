@@ -228,8 +228,84 @@ def total_vqvae_loss(recon_loss, cb_loss, commit_loss, commitment_weight):
     
     return recon_loss + cb_loss + commitment_weight * commit_loss
 
-# Step 21 - vqvae_loss_and_grads (not yet solved)
-# TODO: implement
+# Step 21 - vqvae_loss_and_grads
+def vqvae_loss_and_grads(params, image_batch, patch_size, commitment_weight):
+    # TODO: Compute the VQ-VAE total loss and gradients wrt encoder/decoder/codebook over a batch of images.
+    
+    def loss_fn(current_params):
+        encoder = current_params["encoder"]
+        decoder = current_params["decoder"]
+        codebook = current_params["codebook"]
+
+        def process_image(image):
+            # image: (H, W)
+            patches = split_image_into_patches(image, patch_size)
+
+            # patches: (grid_h, grid_w, patch_size, patch_size)
+            grid_h, grid_w = patches.shape[:2]
+
+            flat_patches = flatten_patches(patches)
+
+            latents = encode_patches(flat_patches, encoder)
+
+            distances = grid_distances_to_codebook(
+                latents,
+                codebook,
+            )
+
+            code_indices = assign_nearest_codes(distances)
+
+            quantized = lookup_codebook_vectors(
+                code_indices,
+                codebook,
+            )
+
+            straight_through = straight_through_quantize(
+                latents,
+                quantized,
+            )
+
+            decoded_patches = decode_latents(
+                straight_through,
+                decoder,
+            )
+
+            reconstruction = reassemble_patches_into_image(
+                decoded_patches,
+                grid_h,
+                grid_w,
+                patch_size,
+            )
+
+            return reconstruction, latents, quantized
+
+        reconstructions, latents, quantized = jax.vmap(
+            process_image
+        )(image_batch)
+
+        recon_loss = reconstruction_loss(
+            image_batch,
+            reconstructions,
+        )
+
+        cb_loss = codebook_loss(
+            latents,
+            quantized,
+        )
+
+        commit_loss = commitment_loss(
+            latents,
+            quantized,
+        )
+
+        return total_vqvae_loss(
+            recon_loss,
+            cb_loss,
+            commit_loss,
+            commitment_weight,
+        )
+
+    return jax.value_and_grad(loss_fn)(params)
 
 # Step 22 - apply_vqvae_update (not yet solved)
 # TODO: implement
