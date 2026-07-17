@@ -199,8 +199,13 @@ def straight_through_quantize(latents, quantized):
     # stop_gradient(x) returns the same value as x during the forward pass but treat it as constant during auto-differentiation
     return latents + jax.lax.stop_gradient(quantized - latents)
 
-# Step 17 - codebook_loss (not yet solved)
-# TODO: implement
+# Step 17 - codebook_loss
+def codebook_loss(latents, quantized):
+    # TODO: mean squared error between stop_gradient(latents) and quantized
+    
+    mse = jnp.mean((latents - quantized) ** 2)
+
+    return mse
 
 # Step 18 - commitment_loss (not yet solved)
 # TODO: implement
