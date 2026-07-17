@@ -345,8 +345,10 @@ def flatten_token_grid(token_grid):
     
     return token_grid.reshape(-1)
 
-# Step 25 - reshape_tokens_to_grid (not yet solved)
-# TODO: implement
+# Step 25 - reshape_tokens_to_grid
+def reshape_tokens_to_grid(token_sequence, grid_h, grid_w):
+    # TODO: reshape a 1D token sequence back into a 2D (grid_h, grid_w) grid
+    return token_sequence.reshape((grid_h, grid_w))
 
 # Step 26 - build_char_vocab (not yet solved)
 # TODO: implement
