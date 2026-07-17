@@ -368,8 +368,11 @@ def encode_label_to_ids(label, char_vocab):
 
     return arr
 
-# Step 28 - form_multimodal_sequence (not yet solved)
-# TODO: implement
+# Step 28 - form_multimodal_sequence
+def form_multimodal_sequence(text_ids, image_tokens, image_token_offset):
+    # TODO: prepend text_ids before image_tokens shifted by image_token_offset
+    
+    return jnp.concatenate([text_ids, image_tokens+image_token_offset])
 
 # Step 29 - init_token_embedding (not yet solved)
 # TODO: implement
