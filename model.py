@@ -424,8 +424,27 @@ def layer_norm(x, scale, shift, eps=1e-5):
 
     return normalized * scale + shift
 
-# Step 35 - init_attention_params (not yet solved)
-# TODO: implement
+# Step 35 - init_attention_params
+def init_attention_params(key, d_model):
+    # TODO: return dict with 'wq','wk','wv','wo', each (d_model, d_model) small random
+
+    keys = jax.random.split(key, 4)
+    scale = 0.02
+
+    return {
+        "wq": scale * jax.random.normal(
+            keys[0], (d_model, d_model), dtype=jnp.float32
+        ),
+        "wk": scale * jax.random.normal(
+            keys[1], (d_model, d_model), dtype=jnp.float32
+        ),
+        "wv": scale * jax.random.normal(
+            keys[2], (d_model, d_model), dtype=jnp.float32
+        ),
+        "wo": scale * jax.random.normal(
+            keys[3], (d_model, d_model), dtype=jnp.float32
+        ),
+    }
 
 # Step 36 - project_qkv (not yet solved)
 # TODO: implement
