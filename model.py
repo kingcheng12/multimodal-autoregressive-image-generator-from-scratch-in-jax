@@ -189,8 +189,14 @@ def lookup_codebook_vectors(indices, codebook):
     # TODO: return the codebook row for each token index, shape (num_patches, latent_dim)
     return codebook[indices]
 
-# Step 16 - straight_through_quantize (not yet solved)
-# TODO: implement
+# Step 16 - straight_through_quantize
+def straight_through_quantize(latents, quantized):
+    # TODO: return quantized in value but with latents' gradient (straight-through)
+
+    latents = jnp.asarray(latents)
+    quantized = jnp.asarray(quantized)
+
+    return latents + jax.lax.stop_gradient(quantized - latents)
 
 # Step 17 - codebook_loss (not yet solved)
 # TODO: implement
