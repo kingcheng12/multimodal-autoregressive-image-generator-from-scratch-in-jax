@@ -388,8 +388,11 @@ def init_positional_embedding(key, max_seq_len, embed_dim):
 
     return scale * jax.random.normal(key, shape=(max_seq_len, embed_dim))
 
-# Step 31 - lookup_token_embeddings (not yet solved)
-# TODO: implement
+# Step 31 - lookup_token_embeddings
+def lookup_token_embeddings(token_embedding, token_ids):
+    # TODO: Select the embedding row for each id to get (seq_len, d_model).
+    
+    return token_embedding[token_ids]
 
 # Step 32 - add_positional_embeddings (not yet solved)
 # TODO: implement
