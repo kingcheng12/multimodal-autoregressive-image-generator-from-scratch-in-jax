@@ -607,8 +607,21 @@ def transformer_block(x, block_params, causal_mask, num_heads):
 
     return x
 
-# Step 46 - transformer_backbone (not yet solved)
-# TODO: implement
+# Step 46 - transformer_backbone
+def transformer_backbone(x, blocks_params, causal_mask, num_heads):
+    # TODO: Apply each transformer block in sequence to the hidden states.
+    
+    hidden_states = x
+
+    for block_params in blocks_params:
+        hidden_states = transformer_block(
+            hidden_states,
+            block_params,
+            causal_mask,
+            num_heads,
+        )
+
+    return hidden_states
 
 # Step 47 - init_output_projection (not yet solved)
 # TODO: implement
