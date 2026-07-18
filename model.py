@@ -494,8 +494,20 @@ def weighted_sum_of_values(attn_weights, v_heads):
 
     return attn_weights @ v_heads
 
-# Step 42 - merge_heads_and_project (not yet solved)
-# TODO: implement
+# Step 42 - merge_heads_and_project
+def merge_heads_and_project(head_outputs, attn_params):
+    # TODO: concatenate per-head outputs into d_model and apply the wo projection
+    wo = attn_params["wo"]
+    num_heads, seq_len, d_head = head_outputs.shape
+    d_model = num_heads * d_head
+
+    # head_outputs (num_heads, seq_len, d_head)
+    merged = head_outputs.transpose(1, 0, 2).reshape(
+        seq_len,
+        d_model,
+    )
+    
+    return merged @ wo
 
 # Step 43 - init_feedforward_params (not yet solved)
 # TODO: implement
