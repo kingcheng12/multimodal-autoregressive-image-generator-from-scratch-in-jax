@@ -551,8 +551,59 @@ def feedforward_mlp(x, ff_params):
 
     return z2
 
-# Step 45 - transformer_block (not yet solved)
-# TODO: implement
+# Step 45 - transformer_block
+def transformer_block(x, block_params, causal_mask, num_heads):
+    # TODO: pre-norm attention with a residual, then pre-norm MLP with a residual
+
+    # layer norm
+    x_norm = layer_norm(
+        x,
+        block_params["ln1_scale"],
+        block_params["ln1_shift"],
+    )
+
+    # mh causal attn
+    q, k, v = project_qkv(
+        x_norm,
+        block_params["attn"],
+    )
+    q_heads = reshape_to_heads(q, num_heads)
+    k_heads = reshape_to_heads(k, num_heads)
+    v_heads = reshape_to_heads(v, num_heads)
+
+    scores = scaled_dot_product_scores(q_heads, k_heads)
+
+    masked_scores = add_causal_mask_to_scores(
+        scores,
+        causal_mask,
+    )
+
+    attn_weights = attention_weights_softmax(masked_scores)
+    head_outputs = weighted_sum_of_values(
+        attn_weights,
+        v_heads,
+    )
+    attn_output = merge_heads_and_project(
+        head_outputs,
+        block_params["attn"],
+    )
+    # skip connection
+    x = x + attn_output
+
+    x_norm = layer_norm(
+        x,
+        block_params["ln2_scale"],
+        block_params["ln2_shift"],
+    )
+
+    ff_output = feedforward_mlp(
+        x_norm,
+        block_params["ff"],
+    )
+
+    x = x + ff_output
+
+    return x
 
 # Step 46 - transformer_backbone (not yet solved)
 # TODO: implement
