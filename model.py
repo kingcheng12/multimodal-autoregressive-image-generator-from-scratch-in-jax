@@ -470,8 +470,14 @@ def scaled_dot_product_scores(q_heads, k_heads):
     d_head = q_heads.shape[-1]
     return q_heads @ jnp.swapaxes(k_heads, -1, -2) / jnp.sqrt(d_head)
 
-# Step 39 - add_causal_mask_to_scores (not yet solved)
-# TODO: implement
+# Step 39 - add_causal_mask_to_scores
+def add_causal_mask_to_scores(scores, causal_mask):
+    # TODO: broadcast-add the (seq_len, seq_len) mask onto (num_heads, seq_len, seq_len) scores
+    
+    scores = jnp.asarray(scores)
+    causal_mask = jnp.asarray(causal_mask)
+
+    return scores + causal_mask[None, :, :]
 
 # Step 40 - attention_weights_softmax (not yet solved)
 # TODO: implement
