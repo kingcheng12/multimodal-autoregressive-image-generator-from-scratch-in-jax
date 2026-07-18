@@ -623,8 +623,23 @@ def transformer_backbone(x, blocks_params, causal_mask, num_heads):
 
     return hidden_states
 
-# Step 47 - init_output_projection (not yet solved)
-# TODO: implement
+# Step 47 - init_output_projection
+def init_output_projection(key, d_model, vocab_size):
+    # TODO: build dict with 'w_out' (d_model, vocab_size) and 'b_out' (vocab_size,)
+    scale = 0.02
+
+    w_out = scale * jax.random.normal(
+        key,
+        shape=(d_model, vocab_size),
+        dtype=jnp.float32,
+    )
+
+    b_out = jnp.zeros((vocab_size, ))
+
+    return {
+        'w_out': w_out,
+        'b_out': b_out,
+    }
 
 # Step 48 - project_to_logits (not yet solved)
 # TODO: implement
