@@ -602,6 +602,7 @@ def transformer_block(x, block_params, causal_mask, num_heads):
         block_params["ff"],
     )
 
+    # skip connection
     x = x + ff_output
 
     return x
