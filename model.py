@@ -536,8 +536,20 @@ def init_feedforward_params(key, d_model, d_ff):
         "w2": w2,
     }
 
-# Step 44 - feedforward_mlp (not yet solved)
-# TODO: implement
+# Step 44 - feedforward_mlp
+def feedforward_mlp(x, ff_params):
+    # TODO: expand with w1, apply GELU, then project back with w2
+
+    w1 = ff_params['w1']
+    w2 = ff_params['w2']
+
+    z1 = x @ w1
+
+    a1 = jax.nn.gelu(z1)
+
+    z2 = a1 @ w2
+
+    return z2
 
 # Step 45 - transformer_block (not yet solved)
 # TODO: implement
