@@ -641,8 +641,14 @@ def init_output_projection(key, d_model, vocab_size):
         'b_out': b_out,
     }
 
-# Step 48 - project_to_logits (not yet solved)
-# TODO: implement
+# Step 48 - project_to_logits
+def project_to_logits(hidden_states, output_params):
+    # TODO: map each (d_model,) hidden vector to (vocab_size,) logits via a linear layer
+
+    w_out = output_params['w_out']
+    b_out = output_params['b_out']
+
+    return hidden_states @ w_out + b_out
 
 # Step 49 - image_token_cross_entropy (not yet solved)
 # TODO: implement
