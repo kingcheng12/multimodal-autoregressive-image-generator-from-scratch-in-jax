@@ -590,6 +590,7 @@ def transformer_block(x, block_params, causal_mask, num_heads):
     # skip connection
     x = x + attn_output
 
+    # 2nd layer norm
     x_norm = layer_norm(
         x,
         block_params["ln2_scale"],
