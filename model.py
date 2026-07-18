@@ -455,8 +455,14 @@ def project_qkv(x, attn_params):
 
     return q, k, v
 
-# Step 37 - reshape_to_heads (not yet solved)
-# TODO: implement
+# Step 37 - reshape_to_heads
+def reshape_to_heads(matrix, num_heads):
+    # TODO: split the (seq_len, d_model) projection into num_heads attention heads
+    seq_len, d_model = matrix.shape
+
+    d_head = d_model // num_heads
+
+    return matrix.reshape(seq_len, num_heads, d_head).transpose(1, 0, 2)
 
 # Step 38 - scaled_dot_product_scores (not yet solved)
 # TODO: implement
