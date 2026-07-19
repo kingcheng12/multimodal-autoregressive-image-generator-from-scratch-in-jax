@@ -1146,6 +1146,61 @@ def train_transformer_on_token_sequences(sequences, params, opt_state, optimizer
 
     return params, opt_state, loss_history
 
-# Step 64 - generate_image_from_label (not yet solved)
-# TODO: implement
+# Step 64 - generate_image_from_label
+def generate_image_from_label(label, vocab, transformer_params, codebook, decoder_params, grid_shape, text_len, num_image_tokens, key, guidance_scale, temperature, top_k):
+    # TODO: encode label, build padded text prefix + null prefix, sample image tokens, decode to image.
+
+    grid_size, patch_size = grid_shape
+
+    # Encode label characters to token IDs.
+    char_ids = []
+    for ch in label:
+        if ch not in vocab:
+            raise ValueError(f"Unknown character in label: {ch!r}")
+        char_ids.append(vocab[ch])
+
+    text_prefix = jnp.asarray(char_ids, dtype=jnp.int32)
+
+    # Truncate or pad to exactly text_len.
+    text_prefix = text_prefix[:text_len]
+    pad_len = text_len - text_prefix.shape[0]
+    if pad_len > 0:
+        text_prefix = jnp.concatenate(
+            [
+                text_prefix,
+                jnp.zeros((pad_len,), dtype=jnp.int32),
+            ]
+        )
+
+    # Null prefix for classifier-free guidance.
+    null_prefix = jnp.zeros((text_len,), dtype=jnp.int32)
+
+    # Sample image tokens autoregressively.
+    sampled_image_tokens = generate_image_tokens(
+        params=transformer_params,
+        text_prefix=text_prefix,
+        key=key,
+        num_image_tokens=num_image_tokens,
+        num_heads=transformer_params["num_heads"],
+        null_prefix=null_prefix,
+        guidance_scale=guidance_scale,
+        temperature=temperature,
+        top_k=top_k,
+    )
+
+    # Undo the image-token offset used during training.
+    # Assumes image tokens were offset by the number of text-vocab tokens.
+    image_token_offset = len(vocab)
+    cleaned_image_tokens = (
+        sampled_image_tokens - image_token_offset
+    ).astype(jnp.int32)
+
+    # Decode discrete image tokens back into an image.
+    return decode_tokens_to_image(
+        cleaned_image_tokens,
+        codebook,
+        decoder_params,
+        grid_size,
+        patch_size,
+    )
 
