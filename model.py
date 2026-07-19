@@ -1019,8 +1019,20 @@ def average_reconstruction_error(encoder_params, decoder_params, codebook, image
 
     return recon_loss
 
-# Step 61 - nearest_neighbor_distance_to_dataset (not yet solved)
-# TODO: implement
+# Step 61 - nearest_neighbor_distance_to_dataset
+def nearest_neighbor_distance_to_dataset(generated_image, dataset_images):
+    # TODO: return the min squared Euclidean distance to any dataset image
+
+    differences = dataset_images - generated_image
+
+    # Sum across every image dimension, but not the dataset dimension.
+    image_axes = tuple(range(1, differences.ndim))
+    squared_distances = jnp.sum(
+        differences ** 2,
+        axis=image_axes,
+    )
+
+    return jnp.min(squared_distances)
 
 # Step 62 - train_vqvae_on_toy_images (not yet solved)
 # TODO: implement
