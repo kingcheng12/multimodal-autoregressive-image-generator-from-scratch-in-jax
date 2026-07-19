@@ -672,8 +672,67 @@ def image_token_cross_entropy(logits, target_ids, image_start_index):
 
     return -jnp.mean(target_log_probs)
 
-# Step 50 - transformer_loss_and_grads (not yet solved)
-# TODO: implement
+# Step 50 - transformer_loss_and_grads
+from jax import config
+
+config.update("jax_enable_x64", True)
+
+def transformer_model_forward(
+    params,
+    token_ids,
+    causal_mask,
+    num_heads,
+):
+    """Convert token IDs into next-token logits."""
+    # token_ids: (seq_len,)
+
+    token_embeds = lookup_token_embeddings(
+        params["token_embedding"],
+        token_ids,
+    )
+    # (seq_len, d_model)
+
+    hidden_states = add_positional_embeddings(
+        token_embeds,
+        params["positional_embedding"],
+    )
+    # (seq_len, d_model)
+
+    hidden_states = transformer_backbone(
+        hidden_states,
+        params["blocks"],
+        causal_mask,
+        num_heads,
+    )
+    # (seq_len, d_model)
+
+    logits = project_to_logits(hidden_states, params['output'])
+
+    return logits
+
+def transformer_loss_and_grads(params, batch_sequences, causal_mask, num_heads, image_start_index):
+    # TODO: average per-sequence cross entropy then take value_and_grad over params
+    
+    def loss_fn(current_params):
+        def sequence_loss(sequence):
+            logits = transformer_model_forward(
+                current_params,
+                sequence,
+                causal_mask,
+                num_heads,
+            )
+
+            return image_token_cross_entropy(
+                logits,
+                sequence,
+                image_start_index,
+            )
+
+        per_sequence_losses = jax.vmap(sequence_loss)(batch_sequences)
+        return jnp.mean(per_sequence_losses)
+
+    loss, grads = jax.value_and_grad(loss_fn)(params)
+    return loss, grads
 
 # Step 51 - apply_transformer_update (not yet solved)
 # TODO: implement
