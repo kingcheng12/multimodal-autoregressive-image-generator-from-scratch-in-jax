@@ -967,9 +967,9 @@ def next_token_accuracy(params, batch_sequences, causal_mask, num_heads, image_s
 def average_reconstruction_error(encoder_params, decoder_params, codebook, image_batch, patch_size):
     # TODO: encode, quantize, decode each image and average the squared reconstruction error
 
-    def image_reconstruction_error(image):
+    norm_image = image = normalize_image_batch(image_batch)
 
-        image = normalize_image_batch(image)
+    def image_reconstruction(image):
 
         patches = split_image_into_patches(image, patch_size)
 
@@ -1008,11 +1008,16 @@ def average_reconstruction_error(encoder_params, decoder_params, codebook, image
             patch_size,
         )
 
-        return jnp.mean((image - reconstruction) ** 2)
+        return reconstruction
 
-    per_image_errors  = jax.vmap(image_reconstruction_error)(image_batch)
+    per_seq_recon = jax.vmap(image_reconstruction)(norm_image)
 
-    return jnp.mean(per_image_errors)
+    recon_loss = reconstruction_loss(
+        norm_image,
+        per_seq_recon,
+    )
+
+    return recon_loss
 
 # Step 61 - nearest_neighbor_distance_to_dataset (not yet solved)
 # TODO: implement
