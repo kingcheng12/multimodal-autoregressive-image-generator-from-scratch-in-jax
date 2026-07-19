@@ -734,8 +734,15 @@ def transformer_loss_and_grads(params, batch_sequences, causal_mask, num_heads, 
     loss, grads = jax.value_and_grad(loss_fn)(params)
     return loss, grads
 
-# Step 51 - apply_transformer_update (not yet solved)
-# TODO: implement
+# Step 51 - apply_transformer_update
+def apply_transformer_update(params, grads, opt_state, optimizer):
+    # TODO: apply one optax update and return (new_params, new_opt_state)
+
+    updates, opt_state = optimizer.update(grads, opt_state, params)
+
+    new_params = optax.apply_updates(params, updates)
+
+    return new_params, opt_state
 
 # Step 52 - drop_text_prefix (not yet solved)
 # TODO: implement
