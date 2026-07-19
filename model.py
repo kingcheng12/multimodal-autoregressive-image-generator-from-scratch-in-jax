@@ -905,8 +905,23 @@ def generate_image_tokens(params, text_prefix, key, num_image_tokens, num_heads,
         
     return jnp.stack(generated_tokens)
 
-# Step 58 - decode_tokens_to_image (not yet solved)
-# TODO: implement
+# Step 58 - decode_tokens_to_image
+def decode_tokens_to_image(image_tokens, codebook, decoder_params, grid_size, patch_size):
+    # TODO: grid the tokens, look up codebook latents, decode, and reassemble patches
+
+    # fold seq to 2d
+    token_grid = reshape_tokens_to_grid(image_tokens, grid_size, grid_size)
+
+    # look up latent vectors
+    latent_grid = lookup_codebook_vectors(token_grid, codebook)
+
+    # linear decoder
+    flat_patches = decode_latents(latent_grid, decoder_params['decoder'])
+
+    # decoded patch to full image
+    img = reassemble_patches_into_image(flat_patches, grid_size, grid_size, patch_size)
+
+    return img
 
 # Step 59 - next_token_accuracy (not yet solved)
 # TODO: implement
