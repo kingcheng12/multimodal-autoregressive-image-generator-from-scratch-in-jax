@@ -779,8 +779,23 @@ def logits_to_probabilities(logits, temperature):
     # stable softmax
     return attention_weights_softmax(shift_logits)
 
-# Step 55 - top_k_filter_logits (not yet solved)
-# TODO: implement
+# Step 55 - top_k_filter_logits
+def top_k_filter_logits(logits, k):
+    # TODO: keep the k largest logits and set the rest to -1e9
+    
+    _, top_k_indices = jax.lax.top_k(logits, k)
+
+    # (..., k, vocab_size)
+    selected = jax.nn.one_hot(
+        top_k_indices,
+        num_classes=logits.shape[-1],
+        dtype=jnp.bool_,
+    )
+
+    # Combine the k one-hot masks.
+    mask = jnp.any(selected, axis=-2)
+
+    return jnp.where(mask, logits, -1e9)
 
 # Step 56 - sample_token_index (not yet solved)
 # TODO: implement
