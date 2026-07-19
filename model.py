@@ -769,8 +769,15 @@ def combine_guided_logits(cond_logits, uncond_logits, guidance_scale):
 
     return uncond_logits + guidance_scale * (cond_logits - uncond_logits)
 
-# Step 54 - logits_to_probabilities (not yet solved)
-# TODO: implement
+# Step 54 - logits_to_probabilities
+def logits_to_probabilities(logits, temperature):
+    # TODO: scale logits by temperature, then apply a stable softmax
+    
+    # add temperature to all logits
+    shift_logits = logits / temperature
+
+    # stable softmax
+    return attention_weights_softmax(shift_logits)
 
 # Step 55 - top_k_filter_logits (not yet solved)
 # TODO: implement
