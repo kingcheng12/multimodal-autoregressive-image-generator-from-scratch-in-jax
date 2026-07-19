@@ -797,8 +797,18 @@ def top_k_filter_logits(logits, k):
 
     return jnp.where(mask, logits, -1e9)
 
-# Step 56 - sample_token_index (not yet solved)
-# TODO: implement
+# Step 56 - sample_token_index
+def sample_token_index(probabilities, key):
+    # TODO: Sample one token id from a probability distribution using a PRNG key.
+
+    token_ids = jnp.arange(probabilities.shape[0])
+
+    return jax.random.choice(
+        key,
+        token_ids,
+        shape=(),
+        p=probabilities,
+    )
 
 # Step 57 - generate_image_tokens (not yet solved)
 # TODO: implement
