@@ -923,8 +923,45 @@ def decode_tokens_to_image(image_tokens, codebook, decoder_params, grid_size, pa
 
     return img
 
-# Step 59 - next_token_accuracy (not yet solved)
-# TODO: implement
+# Step 59 - next_token_accuracy
+def next_token_accuracy(params, batch_sequences, causal_mask, num_heads, image_start_index):
+    # TODO: run the transformer forward pass and score argmax predictions on image positions
+    def sequence_accuracy(sequence):
+        hidden_states = lookup_token_embeddings(
+            params["token_embedding"],
+            sequence,
+        )
+        hidden_states = add_positional_embeddings(
+            hidden_states,
+            params["positional_embedding"],
+        )
+
+        causal_mask = build_causal_mask(sequence.shape[0])
+
+        hidden_states = transformer_backbone(
+            hidden_states,
+            params["blocks"],
+            causal_mask,
+            num_heads,
+        )
+
+        logits = project_to_logits(
+            hidden_states,
+            params["output"],
+        )
+
+        image_logits = logits[image_start_index - 1 : -1]
+        image_targets = sequence[image_start_index:]
+
+        predictions = jnp.argmax(image_logits, axis=-1)
+
+        return jnp.mean(predictions == image_targets)
+
+    per_sequence_accuracy = jax.vmap(sequence_accuracy)(
+        batch_sequences
+    )
+
+    return jnp.mean(per_sequence_accuracy)
 
 # Step 60 - average_reconstruction_error (not yet solved)
 # TODO: implement
