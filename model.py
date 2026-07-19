@@ -1034,8 +1034,81 @@ def nearest_neighbor_distance_to_dataset(generated_image, dataset_images):
 
     return jnp.min(squared_distances)
 
-# Step 62 - train_vqvae_on_toy_images (not yet solved)
-# TODO: implement
+# Step 62 - train_vqvae_on_toy_images
+import optax
+import math
+
+def apply_vqvae_update(
+    params,
+    grads,
+    opt_state,
+    optimizer,
+):
+    updates, new_opt_state = optimizer.update(
+        grads,
+        opt_state,
+        params,
+    )
+
+    new_params = optax.apply_updates(
+        params,
+        updates,
+    )
+
+    return new_params, new_opt_state
+
+def train_vqvae_on_toy_images(images, params, codebook, opt_state, optimizer, num_steps):
+    # TODO: loop num_steps times calling vqvae_loss_and_grads then apply_vqvae_update
+    if num_steps <= 0:
+        return (
+            params,
+            codebook,
+            opt_state,
+            [],
+        )
+
+    full_params = {
+        "encoder": params["encoder"],
+        "decoder": params["decoder"],
+        "codebook": codebook,
+    }
+
+    # encoder shape: (patch_size**2, latent_dim)
+    patch_dim = full_params["encoder"].shape[0]
+    patch_size = math.isqrt(patch_dim)
+
+    loss_history = []
+
+    for _ in range(num_steps):
+        loss, grads = vqvae_loss_and_grads(
+            full_params,
+            images,
+            patch_size,
+            commitment_weight=1.0,
+        )
+
+        full_params, opt_state = apply_vqvae_update(
+            full_params,
+            grads,
+            opt_state,
+            optimizer,
+        )
+
+        loss_history.append(loss)
+
+    trained_params = {
+        "encoder": full_params["encoder"],
+        "decoder": full_params["decoder"],
+    }
+
+    trained_codebook = full_params["codebook"]
+
+    return (
+        trained_params,
+        trained_codebook,
+        opt_state,
+        jnp.stack(loss_history),
+    )
 
 # Step 63 - train_transformer_on_token_sequences (not yet solved)
 # TODO: implement
