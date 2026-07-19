@@ -650,8 +650,27 @@ def project_to_logits(hidden_states, output_params):
 
     return hidden_states @ w_out + b_out
 
-# Step 49 - image_token_cross_entropy (not yet solved)
-# TODO: implement
+# Step 49 - image_token_cross_entropy
+def image_token_cross_entropy(logits, target_ids, image_start_index):
+    # TODO: mean next-token cross entropy over image-token positions only
+    
+    logits = jnp.asarray(logits)
+    target_ids = jnp.asarray(target_ids)
+
+    image_logits = logits[image_start_index - 1 : -1]
+    image_targets = target_ids[image_start_index:]
+
+    log_probs = jax.nn.log_softmax(image_logits, axis=-1)
+
+    # jnp.take_along_axis(array, indices, axis)
+    # in array, over axis, select indices
+    target_log_probs = jnp.take_along_axis(
+        log_probs,
+        image_targets[:, None],
+        axis=-1,
+    ).squeeze(-1)
+
+    return -jnp.mean(target_log_probs)
 
 # Step 50 - transformer_loss_and_grads (not yet solved)
 # TODO: implement
