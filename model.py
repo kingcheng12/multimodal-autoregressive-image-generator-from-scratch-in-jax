@@ -763,8 +763,11 @@ def drop_text_prefix(sequence, key, image_start_index, drop_prob, null_token_id)
 
     return jnp.asarray(out, dtype=jnp.int32)
 
-# Step 53 - combine_guided_logits (not yet solved)
-# TODO: implement
+# Step 53 - combine_guided_logits
+def combine_guided_logits(cond_logits, uncond_logits, guidance_scale):
+    # TODO: return uncond + guidance_scale * (cond - uncond) for classifier-free guidance
+
+    return uncond_logits + guidance_scale * (cond_logits - uncond_logits)
 
 # Step 54 - logits_to_probabilities (not yet solved)
 # TODO: implement
