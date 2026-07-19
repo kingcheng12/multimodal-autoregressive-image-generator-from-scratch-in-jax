@@ -1110,8 +1110,41 @@ def train_vqvae_on_toy_images(images, params, codebook, opt_state, optimizer, nu
         jnp.stack(loss_history),
     )
 
-# Step 63 - train_transformer_on_token_sequences (not yet solved)
-# TODO: implement
+# Step 63 - train_transformer_on_token_sequences
+def train_transformer_on_token_sequences(sequences, params, opt_state, optimizer, text_len, num_steps):
+    # TODO: loop num_steps times: loss_and_grads then optax update, recording each loss
+    
+    sequences = jnp.asarray(sequences, dtype=jnp.int32)
+
+    seq_len = sequences.shape[1]
+    causal_mask = build_causal_mask(seq_len)
+
+    loss_history = []
+    num_heads = 1
+
+    for _ in range(num_steps):
+        loss, grads = transformer_loss_and_grads(
+            params,
+            sequences,
+            causal_mask,
+            num_heads,
+            image_start_index=text_len,
+        )
+
+        updates, opt_state = optimizer.update(
+            grads,
+            opt_state,
+            params,
+        )
+
+        params = optax.apply_updates(
+            params,
+            updates,
+        )
+
+        loss_history.append(float(loss))
+
+    return params, opt_state, loss_history
 
 # Step 64 - generate_image_from_label (not yet solved)
 # TODO: implement
