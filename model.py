@@ -963,8 +963,56 @@ def next_token_accuracy(params, batch_sequences, causal_mask, num_heads, image_s
 
     return jnp.mean(per_sequence_accuracy)
 
-# Step 60 - average_reconstruction_error (not yet solved)
-# TODO: implement
+# Step 60 - average_reconstruction_error
+def average_reconstruction_error(encoder_params, decoder_params, codebook, image_batch, patch_size):
+    # TODO: encode, quantize, decode each image and average the squared reconstruction error
+
+    def image_reconstruction_error(image):
+
+        image = normalize_image_batch(image)
+
+        patches = split_image_into_patches(image, patch_size)
+
+        grid_h, grid_w = patches.shape[:2]
+
+        flat_patches = flatten_patches(patches)
+
+        latents = encode_patches(flat_patches, encoder_params['weight'])
+
+        distances = grid_distances_to_codebook(
+            latents,
+            codebook,
+        )
+
+        code_indices = assign_nearest_codes(distances)
+
+        quantized = lookup_codebook_vectors(
+            code_indices,
+            codebook,
+        )
+
+        straight_through = straight_through_quantize(
+            latents,
+            quantized,
+        )
+
+        decoded_patches = decode_latents(
+            straight_through,
+            decoder_params['weight'],
+        )
+
+        reconstruction = reassemble_patches_into_image(
+            decoded_patches,
+            grid_h,
+            grid_w,
+            patch_size,
+        )
+
+        return jnp.mean((image - reconstruction) ** 2)
+
+    per_image_errors  = jax.vmap(image_reconstruction_error)(image_batch)
+
+    return jnp.mean(per_image_errors)
 
 # Step 61 - nearest_neighbor_distance_to_dataset (not yet solved)
 # TODO: implement
