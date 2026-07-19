@@ -810,8 +810,100 @@ def sample_token_index(probabilities, key):
         p=probabilities,
     )
 
-# Step 57 - generate_image_tokens (not yet solved)
-# TODO: implement
+# Step 57 - generate_image_tokens
+def generate_image_tokens(params, text_prefix, key, num_image_tokens, num_heads, null_prefix, guidance_scale, temperature, top_k):
+    # TODO: autoregressively sample image tokens with classifier-free guidance
+    text_prefix = jnp.asarray(text_prefix, dtype=jnp.int32)
+    null_prefix = jnp.asarray(null_prefix, dtype=jnp.int32)
+
+    # Initialize two autoregressive sequences
+    conditional_sequence = text_prefix
+    unconditional_sequence = null_prefix
+
+    generated_tokens = []
+
+    def get_next_token_logits(sequence):
+        # Build embeddings for the current text-and-image sequence.
+        hidden_states = lookup_token_embeddings(
+            params["token_embedding"],
+            sequence,
+        )
+
+        hidden_states = add_positional_embeddings(
+            hidden_states,
+            params["positional_embedding"],
+        )
+
+        # Each iteration has a longer sequence, so construct a causal mask
+        # matching the current sequence length.
+        causal_mask = build_causal_mask(sequence.shape[0])
+
+        hidden_states = transformer_backbone(
+            hidden_states,
+            params["blocks"],
+            causal_mask,
+            num_heads,
+        )
+
+        logits = project_to_logits(
+            hidden_states,
+            params["output"],
+        )
+
+        # The final position predicts the next token.
+        return logits[-1]
+
+    for _ in range(num_image_tokens):
+        # Prediction conditioned on the real text prefix.
+        conditional_logits = get_next_token_logits(
+            conditional_sequence
+        )
+
+        # Prediction conditioned on the null prefix.
+        unconditional_logits = get_next_token_logits(
+            unconditional_sequence
+        )
+
+        guided_logits = (
+            unconditional_logits
+            + guidance_scale
+            * (conditional_logits - unconditional_logits)
+        )
+
+        # Keep only the top-k candidate tokens.
+        filtered_logits = top_k_filter_logits(
+            guided_logits,
+            top_k,
+        )
+
+        # Apply temperature and stable softmax.
+        probabilities = logits_to_probabilities(
+            filtered_logits,
+            temperature,
+        )
+
+        # Split the key so every generation step uses a fresh subkey.
+        key, sample_key = jax.random.split(key)
+
+        next_token = sample_token_index(
+            probabilities,
+            sample_key,
+        ).astype(jnp.int32)
+
+        generated_tokens.append(next_token)
+
+        # Both branches share the same generated image-token history.
+        next_token_array = next_token[None]
+
+        conditional_sequence = jnp.concatenate(
+            [conditional_sequence, next_token_array]
+        )
+
+        unconditional_sequence = jnp.concatenate(
+            [unconditional_sequence, next_token_array]
+        )
+        
+    return jnp.stack(generated_tokens)
 
 # Step 58 - decode_tokens_to_image (not yet solved)
 # TODO: implement
